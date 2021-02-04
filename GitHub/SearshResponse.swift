@@ -19,6 +19,7 @@ struct SearshResponse: Codable {
 struct User: Codable {
     var login: String
     var type: String
+    var url: URL
 }
 
 

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 
 class NetworkService {
@@ -33,6 +34,19 @@ class NetworkService {
                     print("Faild to decode JSON,", jsonError)
                     completion(.failure(jsonError))
                 }
+            }
+        }.resume()
+        
+    }
+    
+    func fetchImage(url: URL, completion: @escaping (UIImage?) -> Void) {
+        
+        URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if let data = data,
+               let image = UIImage(data: data) {
+                completion(image)
+            } else {
+                completion(nil)
             }
         }.resume()
         

@@ -7,10 +7,13 @@
 
 import UIKit
 
-class SearchTableViewController: UITableViewController {
+
+class SearchTableViewController: UITableViewController, UISearchBarDelegate {
 
     let networkService = NetworkService()
-    let sesrchController = UISearchController(searchResultsController: nil)
+    var searshResponse: SearshResponse? = nil
+    let searchController = UISearchController(searchResultsController: nil)
+    private var timer: Timer?
     
     
     
@@ -18,26 +21,17 @@ class SearchTableViewController: UITableViewController {
         super.viewDidLoad()
 
         setupSearchBar()
-        let urlString = "https://api.github.com/search/users?page=1&q=Yarosalv"
-        networkService.requst(urlString: urlString) { (result) in
-            switch result {
-            case .success(let searshResponse):
-                searshResponse.items.map { (users) in
-                    print(users.login)
-                }
-            case .failure(let error):
-                print(error)
-            }
-        }
-       
+     
     }
     
     
     private func setupSearchBar() {
-        navigationItem.searchController = sesrchController
-        sesrchController.searchBar.delegate = self
+        navigationItem.searchController = searchController
+        searchController.searchBar.delegate = self
         navigationController?.navigationBar.prefersLargeTitles = true
-        sesrchController.obscuresBackgroundDuringPresentation = false
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search user GutHub"
+       
     }
     
     
@@ -47,16 +41,32 @@ class SearchTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     
-        return 3
+        return searshResponse?.items.count ?? 0
            
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.textLabel?.text = "123"
+        let users = searshResponse?.items[indexPath.row]
+        cell.textLabel?.text = users?.login
+        cell.detailTextLabel?.text = users?.type
+        networkService.fetchImage(url: (users?.url)!) { (image) in
+            
+            guard let image = image else { return }
+            
+            DispatchQueue.main.async {
+                if let currentIndexPath = self.tableView.indexPath(for: cell),
+                   currentIndexPath != indexPath {
+                    return
+            }
+                cell.imageView?.image = image
+                cell.setNeedsLayout()
+        }
         
 
+        
+    }
         return cell
     }
     
@@ -73,9 +83,24 @@ class SearchTableViewController: UITableViewController {
     */
 
 }
-extension SearchTableViewController: UISearchBarDelegate {
+extension SearchTableViewController {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        print(searchText)
+        let urlString = "https://api.github.com/search/users?page=1&q=\(searchText)"
+        
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (_) in
+            self.networkService.requst(urlString: urlString) { [weak self](result) in
+                switch result {
+                case .success(let searshResponse):
+                    self?.searshResponse = searshResponse
+                    self?.tableView.reloadData()
+                case .failure(let error):
+                    print(error)
+                }
+                
+            }
+        })
+        
     }
 }
