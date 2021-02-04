@@ -9,7 +9,7 @@ import UIKit
 
 
 class SearchTableViewController: UITableViewController, UISearchBarDelegate {
-
+    
     let networkService = NetworkService()
     var searshResponse: SearshResponse? = nil
     let searchController = UISearchController(searchResultsController: nil)
@@ -19,9 +19,9 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupSearchBar()
-     
+        
     }
     
     
@@ -31,20 +31,20 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
         navigationController?.navigationBar.prefersLargeTitles = true
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search user GutHub"
-       
+        
     }
     
     
-
+    
     // MARK: - Table view data source
-
+    
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    
+        
         return searshResponse?.items.count ?? 0
-           
+        
     }
-
+    
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
@@ -59,29 +59,24 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
                 if let currentIndexPath = self.tableView.indexPath(for: cell),
                    currentIndexPath != indexPath {
                     return
-            }
+                }
                 cell.imageView?.image = image
                 cell.setNeedsLayout()
+            }
         }
-        
-
-        
-    }
         return cell
     }
-    
 
-    
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destination.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
 }
 extension SearchTableViewController {
     
