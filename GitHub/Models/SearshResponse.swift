@@ -13,13 +13,15 @@ struct SearshResponse: Codable {
     var total_count: Int
     var incomplete_results: Bool
     var items: [User]
-  
+    
+    
 }
 
 struct User: Codable {
     var login: String
     var type: String
-    var url: URL
+    var avatar_url: URL
+    
 }
 
 

@@ -47,25 +47,29 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
     
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CustomTableViewCell
         let users = searshResponse?.items[indexPath.row]
-        cell.textLabel?.text = users?.login
-        cell.detailTextLabel?.text = users?.type
-        networkService.fetchImage(url: (users?.url)!) { (image) in
-            
+        cell.nameLabel.text = users?.login
+        cell.typeLabel.text = users?.type
+        networkService.fetchImage(url: (users?.avatar_url)!) { (image) in
             guard let image = image else { return }
-            
             DispatchQueue.main.async {
                 if let currentIndexPath = self.tableView.indexPath(for: cell),
                    currentIndexPath != indexPath {
                     return
                 }
-                cell.imageView?.image = image
-                cell.setNeedsLayout()
+                cell.avatarImage.image = image
+                cell.avatarImage.layer.cornerRadius = cell.avatarImage.frame.size.height / 2
+                cell.avatarImage.clipsToBounds = true
             }
         }
         return cell
     }
+       
+    }
+        
+   
+    
 
     /*
      // MARK: - Navigation
@@ -77,7 +81,6 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
      }
      */
     
-}
 extension SearchTableViewController {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -93,9 +96,7 @@ extension SearchTableViewController {
                 case .failure(let error):
                     print(error)
                 }
-                
             }
         })
-        
     }
 }
