@@ -10,9 +10,10 @@ import UIKit
 
 class SearchTableViewController: UITableViewController, UISearchBarDelegate {
     
-    let networkService = NetworkService()
-    var searshResponse: SearshResponse? = nil
+    
+    var searshResponse: SearshResponse! = nil
     let searchController = UISearchController(searchResultsController: nil)
+    
     private var timer: Timer?
     
     
@@ -51,7 +52,8 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
         let users = searshResponse?.items[indexPath.row]
         cell.nameLabel.text = users?.login
         cell.typeLabel.text = users?.type
-        networkService.fetchImage(url: (users?.avatar_url)!) { (image) in
+        cell.urlLabel.text = users?.url
+        NetworkService.shared.fetchImage(url: (users?.avatar_url)!) { (image) in
             guard let image = image else { return }
             DispatchQueue.main.async {
                 if let currentIndexPath = self.tableView.indexPath(for: cell),
@@ -65,22 +67,31 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
         }
         return cell
     }
-       
-    }
+    
+//    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        guard let data = searshResponse?.items else { return }
+//        print(data[indexPath.row])
+//    }
         
    
     
 
-    /*
+    
      // MARK: - Navigation
      
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destination.
-     // Pass the selected object to the new view controller.
+  
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        guard segue.identifier == "DetailSegue" else { return }
+        let controller = segue.destination as! DetailViewController
+        let index = tableView.indexPathForSelectedRow!.row
+        
+        let users = searshResponse.items[index]
+        controller.users = users
+             
      }
-     */
-    
+     
+}
 extension SearchTableViewController {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -88,7 +99,7 @@ extension SearchTableViewController {
         
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (_) in
-            self.networkService.requst(urlString: urlString) { [weak self](result) in
+            NetworkService.shared.requst(urlString: urlString) { [weak self](result) in
                 switch result {
                 case .success(let searshResponse):
                     self?.searshResponse = searshResponse

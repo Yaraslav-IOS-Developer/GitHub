@@ -9,14 +9,15 @@ import UIKit
 
 class CustomTableViewCell: UITableViewCell {
     
-   
+    
     @IBOutlet weak var avatarImage: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var typeLabel: UILabel!
+    @IBOutlet weak var urlLabel: UILabel!
     
-
+    
     func configureCell(_ cell: UITableViewCell, forItemAt indexPatch: IndexPath) {
-
-}
+        
+    }
 }
 

@@ -10,10 +10,15 @@ import Foundation
 
 struct SearshResponse: Codable {
     
-    var total_count: Int
-    var incomplete_results: Bool
+    var count: Int
+    var result: Bool
     var items: [User]
     
+    enum CodingKeys: String, CodingKey {
+        case count = "total_count"
+        case result = "incomplete_results"
+        case items
+    }
     
 }
 
@@ -21,7 +26,10 @@ struct User: Codable {
     var login: String
     var type: String
     var avatar_url: URL
+    var url: String
     
 }
+
+
 
 
